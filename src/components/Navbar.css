@@ -68,37 +68,79 @@
   font-size: inherit;
 }
 
-.auth-link:not(.login-btn):not(.logout-btn) {
+.auth-link:not(.login-btn):not(.logout-btn):not(.admin-btn) {
   color: #64748b;
 }
 
-.auth-link:not(.login-btn):not(.logout-btn):hover {
+.auth-link:not(.login-btn):not(.logout-btn):not(.admin-btn):hover {
   color: #3b82f6;
 }
 
 .login-btn {
   background: #3b82f6;
-  color: white;
+  color: white !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  line-height: 1;
 }
 
 .login-btn:hover {
   background: #2563eb;
+  color: white !important;
 }
 
 .login-btn:focus {
   outline: none;
   background: #2563eb;
+  color: white !important;
 }
 
 .login-btn:active {
   background: #1d4ed8;
   transform: translateY(1px);
   outline: none;
+  color: white !important;
+}
+
+.admin-btn {
+  background: #10b981;
+  color: white !important;
+  margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  line-height: 1;
+}
+
+.admin-btn:hover {
+  background: #059669;
+  color: white !important;
+}
+
+.admin-btn:focus {
+  outline: none;
+  background: #059669;
+  color: white !important;
+}
+
+.admin-btn:active {
+  background: #047857;
+  transform: translateY(1px);
+  outline: none;
+  color: white !important;
 }
 
 .logout-btn {
   background: #ef4444;
-  color: white;
+  color: white !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  line-height: 1;
 }
 
 .logout-btn:hover {

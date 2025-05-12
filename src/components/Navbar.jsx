@@ -1,15 +1,18 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 const Navbar = () => {
   const { isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
+
+  const isAdminPage = location.pathname === '/admin';
 
   return (
     <header className="header">
@@ -26,13 +29,24 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {isLoggedIn && (
-          <div className="nav-auth">
-            <button onClick={handleLogout} className="auth-link logout-btn">
-              Logout
-            </button>
-          </div>
-        )}
+        <div className="nav-auth">
+          {isLoggedIn ? (
+            <>
+              {!isAdminPage && (
+                <Link to="/admin" className="auth-link admin-btn">
+                  Admin
+                </Link>
+              )}
+              <button onClick={handleLogout} className="auth-link logout-btn">
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link to="/login" className="auth-link login-btn">
+              Login
+            </Link>
+          )}
+        </div>
       </nav>
     </header>
   );
