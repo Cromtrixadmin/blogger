@@ -11,13 +11,21 @@ const port = process.env.PORT || 5001;
 app.use(cors());
 app.use(express.json());
 
+// Determine if running on EC2
+const isEC2 = process.env.EC2 === 'true';
+
+// Database configuration with environment variables fallback
+const dbConfig = {
+  host: process.env.DB_HOST || packageJson.database.host,
+  user: process.env.DB_USER || packageJson.database.username,
+  password: process.env.DB_PASSWORD || packageJson.database.password,
+  port: process.env.DB_PORT || packageJson.database.port || 3306,
+  database: process.env.DB_NAME || 'blogger'
+};
+
 // Create a connection pool instead of a single connection
 const pool = mysql.createPool({
-  host: packageJson.database.host,
-  user: packageJson.database.username,
-  password: packageJson.database.password,
-  port: packageJson.database.port || 3306,
-  database: 'blogger',
+  ...dbConfig,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -26,7 +34,13 @@ const pool = mysql.createPool({
   multipleStatements: true,
   connectTimeout: 50000,
   acquireTimeout: 50000,
-  timeout: 50000
+  timeout: 50000,
+  // Add SSL configuration for EC2
+  ...(isEC2 && {
+    ssl: {
+      rejectUnauthorized: false
+    }
+  })
 });
 
 // Log connection errors

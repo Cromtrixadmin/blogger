@@ -2,7 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/AdminDashboard.css';
 
-const API_URL = 'http://localhost:5001/api';
+// Determine API URL based on environment
+const API_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:5001/api'
+  : '/api';  // Use relative path for EC2
+
 const REQUEST_TIMEOUT = 10000; // 10 seconds timeout
 
 const AdminDashboard = () => {
