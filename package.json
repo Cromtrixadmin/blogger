@@ -1,0 +1,51 @@
+{
+  "name": "blogger",
+  "version": "1.0.0",
+  "private": true,
+  "proxy": "http://localhost:5001",
+  "dependencies": {
+    "aws-sdk": "^2.1499.0",
+    "axios": "^1.9.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mysql2": "^3.6.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-quill": "^2.0.0",
+    "react-router-dom": "^6.30.0",
+    "react-scripts": "5.0.1"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "scripts": {
+    "start": "concurrently \"react-scripts start\" \"node server.js\"",
+    "build": "react-scripts build",
+    "server": "node server.js",
+    "init-db": "node database/init_database.js"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "database": {
+    "host": "db-instance-blogger.c0bcoie0al5i.us-east-1.rds.amazonaws.com",
+    "username": "admin",
+    "password": "n:|$2NEH$-(Db|njq6lyDFT$uMAl",
+    "port": 3306
+  }
+}
