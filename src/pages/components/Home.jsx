@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../../../config';
 import '../css/Home.css';
-
-const API_URL = 'http://localhost:5001/api';
 
 const Home = () => {
   const navigate = useNavigate();

@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../css/CreateAdVendor.css';
-
-const API_URL = 'http://localhost:5001/api';
+import { API_URL } from '../../../config';
 
 const EditVendor = () => {
   const navigate = useNavigate();

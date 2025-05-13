@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/ManageAds.css';
-
-const API_URL = 'http://localhost:5001/api';
+import { API_URL } from '../../../config';
 
 // Add AdActivity component
 function AdActivity({ isOpen, onClose, adLocations, onVisibilityChange }) {

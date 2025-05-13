@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/AdminDashboard.css';
+import { API_URL } from '../../../config';
 
-const API_URL = 'http://localhost:5001/api';
 const REQUEST_TIMEOUT = 10000; // 10 seconds timeout
 
 const AdminDashboard = () => {

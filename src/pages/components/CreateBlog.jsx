@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import '../css/CreateBlog.css';
-
-const API_URL = 'http://localhost:5001/api';
+import { API_URL } from '../../../config';
 
 const CreateBlog = () => {
   const navigate = useNavigate();

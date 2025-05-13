@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import '../css/BlogPost.css';
-
-const API_URL = 'http://localhost:5001/api';
+import { API_URL } from '../../../config';
 
 const PopupAd = ({ isVisible, onClose }) => {
   if (!isVisible) return null;
