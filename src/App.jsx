@@ -36,8 +36,6 @@ function App() {
               <Route path="/manage-ads" element={<ManageAds />} />
               <Route path="/create-ad-vendor" element={<CreateAdVendor />} />
               <Route path="/edit-vendor/:id" element={<EditVendor />} />
-              <Route path="/about" element={<div>About Page</div>} />
-              <Route path="/contact" element={<div>Contact Page</div>} />
             </Routes>
           </main>
           <Footer />

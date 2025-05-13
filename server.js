@@ -1,7 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
-const packageJson = require('./package.json');
+require('dotenv').config();
 const { authenticateToken } = require('./middleware/authMiddleware');
 
 const app = express();
@@ -13,11 +13,11 @@ app.use(express.json());
 
 // Create a connection pool instead of a single connection
 const pool = mysql.createPool({
-  host: packageJson.database.host,
-  user: packageJson.database.username,
-  password: packageJson.database.password,
-  port: packageJson.database.port || 3306,
-  database: 'blogger',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT || 3306,
+  database: process.env.DB_NAME || 'blogger',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
