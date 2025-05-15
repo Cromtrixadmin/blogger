@@ -1,43 +1,14 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
-const path = require('path');
-require('dotenv').config({ path: '.env.current' });
+require('dotenv').config();
 const { authenticateToken } = require('./middleware/authMiddleware');
 
 const app = express();
-const port = process.env.API_PORT || 5001;
+const port = process.env.PORT || 5001;
 
-// Load environment files
-const currentEnv = process.env.CURRENT_ENV || 'dev';
-require('dotenv').config({ path: `.env.${currentEnv}` });
-
-// CORS configuration
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (currentEnv === 'dev') {
-      // In development, allow localhost
-      callback(null, true);
-    } else {
-      // In production, allow both IP and domain
-      const allowedOrigins = [
-        `http://${process.env.EC2_IP}:${process.env.FRONTEND_PORT}`,
-        `http://${process.env.DOMAIN_NAME}`,
-        `https://${process.env.DOMAIN_NAME}`
-      ];
-      
-      // Check if origin matches any allowed origins
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    }
-  },
-  credentials: true
-};
-
-app.use(cors(corsOptions));
+// Middleware
+app.use(cors());
 app.use(express.json());
 
 // Create a connection pool instead of a single connection
@@ -57,19 +28,6 @@ const pool = mysql.createPool({
   acquireTimeout: 50000,
   timeout: 50000
 });
-
-// Add debug logging
-console.log('Database Configuration:', {
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  port: process.env.DB_PORT || 3306,
-  database: process.env.DB_NAME || 'blogger'
-});
-
-// Log current environment and configuration
-console.log(`Running in ${currentEnv.toUpperCase()} environment`);
-console.log(`Database host: ${process.env.DB_HOST}`);
-console.log(`API Port: ${port}`);
 
 // Log connection errors
 pool.on('error', (err) => {

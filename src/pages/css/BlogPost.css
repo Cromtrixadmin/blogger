@@ -148,33 +148,6 @@
   color: #334155;
 }
 
-/* Add responsive image styles */
-.blog-post-content img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin: 1.5rem auto;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Ensure images don't overflow their containers */
-.blog-post-content figure {
-  max-width: 100%;
-  margin: 1.5rem auto;
-}
-
-.blog-post-content figure img {
-  margin: 0;
-}
-
-.blog-post-content figure figcaption {
-  text-align: center;
-  color: #64748b;
-  font-size: 0.875rem;
-  margin-top: 0.5rem;
-}
-
 .blog-post-content h2 {
   font-size: 2rem;
   font-weight: 600;
