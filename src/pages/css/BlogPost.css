@@ -198,6 +198,12 @@
   line-height: 1.6;
 }
 
+.blog-post-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* Sidebar Styles */
 .blog-sidebar {
   position: sticky;

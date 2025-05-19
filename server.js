@@ -107,7 +107,7 @@ testDatabaseConnection()
   });
 
 // Simple ping endpoint for testing
-app.get('/ping', (req, res) => {
+app.get('/api/ping', (req, res) => {
   console.log('Ping endpoint called');
   res.json({ message: 'Server is running' });
 });
@@ -906,4 +906,6 @@ app.use((err, req, res, next) => {
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Not found', details: 'The requested resource was not found' });
-}); 
+});
+
+const API_URL = 'http://3.83.125.187:5001/api'; 
