@@ -117,7 +117,7 @@ app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     console.log('Login attempt for user:', username);
-    
+
     const [rows] = await pool.execute(
       'SELECT * FROM users WHERE username = ? AND password = ?',
       [username, password]

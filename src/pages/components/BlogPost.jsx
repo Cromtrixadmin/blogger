@@ -17,7 +17,7 @@ const PopupAd = ({ isVisible, onClose }) => {
             <div className="popup-ad-debug">
               Popup Ad Space
               <br />
-              500x400 Pixels
+              400x400 Pixels
               <br />
               <small>(Visibility Status: {isVisible ? 'Visible' : 'Hidden'})</small>
             </div>
