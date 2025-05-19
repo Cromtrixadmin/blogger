@@ -4,7 +4,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import '../css/CreateBlog.css';
 
-const API_URL = 'http://3.83.125.187:5001/api';
+const API_URL = 'http://52.201.37.240:5001/api';
 
 const CreateBlog = () => {
   const navigate = useNavigate();

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../css/ManageAds.css';
 import { getAdSettings, toggleAdVisibility, subscribeToAdSettings } from '../../utils/adSettings';
 
-const API_URL = 'http://3.83.125.187:5001/api';
+const API_URL = 'http://52.201.37.240:5001/api';
 
 // Add AdActivity component
 function AdActivity({ isOpen, onClose, adLocations, onVisibilityChange }) {
