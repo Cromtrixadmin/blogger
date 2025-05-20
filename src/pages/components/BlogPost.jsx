@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import '../css/BlogPost.css';
-import { getAdSettings, subscribeToAdSettings } from '../../utils/adSettings';
 
 const API_URL = 'http://52.201.37.240:5001/api';
 
@@ -17,7 +16,7 @@ const PopupAd = ({ isVisible, onClose }) => {
             <div className="popup-ad-debug">
               Popup Ad Space
               <br />
-              400x400 Pixels
+              500x400 Pixels
               <br />
               <small>(Visibility Status: {isVisible ? 'Visible' : 'Hidden'})</small>
             </div>
@@ -34,24 +33,43 @@ const BlogPost = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showPopupAd, setShowPopupAd] = useState(false);
-  const [adVisibility, setAdVisibility] = useState(() => {
-    const settings = getAdSettings();
-    return settings.reduce((acc, setting) => {
-      acc[setting.id] = setting.isVisible;
-      return acc;
-    }, {});
+  const [adVisibility, setAdVisibility] = useState({
+    header: true,
+    left: true,
+    right: true,
+    footerLeft: true,
+    footerRight: true,
+    footer: true,
+    popup: true
   });
 
-  // Subscribe to ad settings changes
   useEffect(() => {
-    const unsubscribe = subscribeToAdSettings((newSettings) => {
-      const visibilityMap = newSettings.reduce((acc, setting) => {
-        acc[setting.id] = setting.isVisible;
-        return acc;
-      }, {});
-      setAdVisibility(visibilityMap);
-    });
-    return () => unsubscribe();
+    // Load ad visibility settings from localStorage
+    const savedSettings = localStorage.getItem('adVisibilitySettings');
+    if (savedSettings) {
+      try {
+        const settings = JSON.parse(savedSettings);
+        if (Array.isArray(settings)) {
+          // Find the popup setting specifically
+          const popupSetting = settings.find(setting => setting.id === 'popup');
+          console.log('Found popup setting:', popupSetting);
+          
+          // Create visibility map from all settings
+          const visibilityMap = settings.reduce((acc, setting) => {
+            acc[setting.id] = setting.isVisible;
+            return acc;
+          }, {});
+          
+          console.log('Loaded ad visibility settings:', visibilityMap);
+          setAdVisibility(prevState => ({
+            ...prevState,
+            ...visibilityMap
+          }));
+        }
+      } catch (error) {
+        console.error('Error parsing ad settings:', error);
+      }
+    }
   }, []);
 
   useEffect(() => {

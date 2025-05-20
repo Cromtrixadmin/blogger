@@ -16,11 +16,7 @@ const Navbar = () => {
       <nav className="navbar">
         <div className="nav-brand">
           <Link to="/" className="brand-link">
-            <img 
-              src="/logo.png" 
-              alt="BlogSpot Logo" 
-              className="brand-logo"
-            />
+            BlogSpot
           </Link>
         </div>
         

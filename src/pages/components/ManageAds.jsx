@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/ManageAds.css';
-import { getAdSettings, toggleAdVisibility, subscribeToAdSettings } from '../../utils/adSettings';
 
 const API_URL = 'http://52.201.37.240:5001/api';
 
@@ -317,20 +316,82 @@ const ManageAds = () => {
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [openInfoVendorId, setOpenInfoVendorId] = useState(null);
   const [isAdActivityOpen, setIsAdActivityOpen] = useState(false);
-  const [adLocations, setAdLocations] = useState(getAdSettings());
 
-  // Subscribe to ad settings changes
+  // Lift the adLocations state here
+  const [adLocations, setAdLocations] = useState([
+    { id: 'header', name: 'Header Banner', isVisible: true },
+    { id: 'left', name: 'Left Banner', isVisible: true },
+    { id: 'right', name: 'Right Banner', isVisible: true },
+    { id: 'footerLeft', name: 'Footer Square Left', isVisible: true },
+    { id: 'footerRight', name: 'Footer Square Right', isVisible: true },
+    { id: 'footer', name: 'Footer Banner', isVisible: true },
+    { id: 'popup', name: 'Popup', isVisible: true }
+  ]);
+
+  // Load/save adLocations from localStorage
   useEffect(() => {
-    const unsubscribe = subscribeToAdSettings((newSettings) => {
-      setAdLocations(newSettings);
-    });
-    return () => unsubscribe();
-  }, []);
+    const defaultLocations = [
+      { id: 'header', name: 'Header Banner', isVisible: true },
+      { id: 'left', name: 'Left Banner', isVisible: true },
+      { id: 'right', name: 'Right Banner', isVisible: true },
+      { id: 'footerLeft', name: 'Footer Square Left', isVisible: true },
+      { id: 'footerRight', name: 'Footer Square Right', isVisible: true },
+      { id: 'footer', name: 'Footer Banner', isVisible: true },
+      { id: 'popup', name: 'Popup', isVisible: true } // Ensure default uses 'Popup'
+    ];
+    
+    const savedSettings = localStorage.getItem('adVisibilitySettings');
+    if (savedSettings) {
+      try {
+        const loadedSettings = JSON.parse(savedSettings);
+        if (Array.isArray(loadedSettings)) {
+          // Ensure all default types exist and names are updated from code defaults
+          const mergedSettings = defaultLocations.map(defaultLoc => {
+            const loadedLoc = loadedSettings.find(loc => loc.id === defaultLoc.id);
+            return {
+              ...defaultLoc, // Start with default (ensures correct name)
+              // Override visibility if it exists in loaded settings
+              isVisible: loadedLoc !== undefined ? loadedLoc.isVisible : defaultLoc.isVisible,
+            };
+          });
 
-  // Handler for visibility change
+          console.log("Merged settings after loading:", mergedSettings);
+          setAdLocations(mergedSettings);
+          // Update localStorage with potentially corrected names/structure
+          localStorage.setItem('adVisibilitySettings', JSON.stringify(mergedSettings));
+        } else {
+           throw new Error("Loaded settings are not an array");
+        }
+      } catch (error) {
+        console.error('Error parsing or merging ad settings:', error);
+        // If parsing/merging fails, save the clean default settings
+        setAdLocations(defaultLocations);
+        localStorage.setItem('adVisibilitySettings', JSON.stringify(defaultLocations));
+      }
+    } else {
+       // If no settings exist, save the clean default settings
+       setAdLocations(defaultLocations);
+       localStorage.setItem('adVisibilitySettings', JSON.stringify(defaultLocations));
+    }
+  }, []); // Run only once on mount
+
+  // Handler for visibility change, passed to AdActivity
   const handleAdVisibilityChange = (locationId) => {
-    toggleAdVisibility(locationId);
+    setAdLocations(currentLocations => {
+      const newLocations = currentLocations.map(location => {
+        if (location.id === locationId) {
+          return { ...location, isVisible: !location.isVisible };
+        }
+        return location;
+      });
+      localStorage.setItem('adVisibilitySettings', JSON.stringify(newLocations));
+      console.log('Updated and saved ad visibility settings:', newLocations);
+      return newLocations;
+    });
   };
+
+  // Define availableAdTypes from the state
+  const availableAdTypes = adLocations.map(loc => ({ id: loc.id, name: loc.name }));
 
   const fetchData = async () => {
     try {
@@ -689,7 +750,7 @@ const ManageAds = () => {
               <h2 className="vendor-info-title">Manage Ads for {selectedVendor.name}</h2>
               <VendorExtraInfo 
                 onSave={handleSaveExtraInfo} 
-                availableAdTypes={adLocations.map(loc => ({ id: loc.id, name: loc.name }))}
+                availableAdTypes={availableAdTypes}
                 vendorId={selectedVendorId}
               />
             </div>

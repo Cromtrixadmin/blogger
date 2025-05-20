@@ -60,7 +60,8 @@ const AdminDashboard = () => {
             navigate('/login');
             return;
           }
-          throw new Error('Failed to fetch blogs');
+          const errorData = await blogsResponse.json().catch(() => ({}));
+          throw new Error(`Failed to fetch blogs: ${blogsResponse.status} ${blogsResponse.statusText} - ${errorData.message || 'Unknown error'}`);
         }
         const blogsData = await blogsResponse.json();
         // Convert categories string to array
@@ -87,7 +88,11 @@ const AdminDashboard = () => {
         const categoriesData = await categoriesResponse.json();
         setCategories(categoriesData);
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Detailed error:', {
+          message: error.message,
+          stack: error.stack,
+          name: error.name
+        });
         setError(error.message || 'Failed to load data. Please try again later.');
       } finally {
         setLoading(false);
