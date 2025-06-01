@@ -1,0 +1,273 @@
+/* Dashboard.css */
+/* General container styles */
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.dashboard-card {
+  background: white;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Header styles */
+.dashboard-header {
+  margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-header p {
+  color: #64748b;
+  font-size: 1rem;
+}
+
+/* Section styles */
+.dashboard-section {
+  margin-bottom: 2rem;
+}
+
+.dashboard-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Grid and layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.dashboard-flex {
+  display: flex;
+  gap: 1.5rem;
+}
+
+/* Stats cards */
+.stat-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s;
+}
+
+.stat-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+/* Button styles - consistent with the rest of the app */
+.dashboard-btn {
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-size: 0.875rem;
+  min-width: 100px;
+  border: 1px solid;
+}
+
+.dashboard-btn-primary {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #2563eb;
+}
+
+.dashboard-btn-primary:hover {
+  background-color: #2563eb;
+  border-color: #1d4ed8;
+}
+
+.dashboard-btn-primary:active {
+  background-color: #1d4ed8;
+  border-color: #1e40af;
+  transform: translateY(1px);
+  outline: none;
+  box-shadow: none;
+}
+
+.dashboard-btn-secondary {
+  background-color: #f1f5f9;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+.dashboard-btn-secondary:hover {
+  background-color: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.dashboard-btn-secondary:active {
+  background-color: #cbd5e1;
+  border-color: #94a3b8;
+  transform: translateY(1px);
+  outline: none;
+  box-shadow: none;
+}
+
+.dashboard-btn-danger {
+  background-color: #fee2e2;
+  color: #ef4444;
+  border-color: #fca5a5;
+}
+
+.dashboard-btn-danger:hover {
+  background-color: #fecaca;
+  border-color: #f87171;
+}
+
+.dashboard-btn-danger:active {
+  background-color: #fecaca;
+  border-color: #ef4444;
+  transform: translateY(1px);
+  outline: none;
+  box-shadow: none;
+}
+
+/* Message styles */
+.dashboard-error {
+  background-color: #fee2e2;
+  color: #dc2626;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-success {
+  background-color: #dcfce7;
+  color: #166534;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Form styles */
+.dashboard-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.dashboard-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dashboard-form-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.dashboard-form-group input,
+.dashboard-form-group select,
+.dashboard-form-group textarea {
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.dashboard-form-group input:focus,
+.dashboard-form-group select:focus,
+.dashboard-form-group textarea:focus {
+  border-color: #3b82f6;
+}
+
+/* Table styles */
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dashboard-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background-color: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  font-weight: 600;
+  color: #475569;
+}
+
+.dashboard-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  color: #1e293b;
+}
+
+.dashboard-table tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .dashboard-card {
+    padding: 1.5rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-flex {
+    flex-direction: column;
+  }
+} 
