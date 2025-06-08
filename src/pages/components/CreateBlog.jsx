@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import '../css/CreateBlog.css';
+import { BACKEND_URL } from '../../config';
 
-const API_URL = 'http://52.201.37.240:5001/api';
 
 const CreateBlog = () => {
   const navigate = useNavigate();
@@ -40,13 +40,13 @@ const CreateBlog = () => {
         }
 
         // Fetch categories
-        const categoriesResponse = await fetch(`${API_URL}/categories`);
+        const categoriesResponse = await fetch(`${BACKEND_URL}/categories`);
         if (!categoriesResponse.ok) throw new Error('Failed to fetch categories');
         const categoriesData = await categoriesResponse.json();
         setCategories(categoriesData);
 
         // Fetch vendors with authentication
-        const vendorsResponse = await fetch(`${API_URL}/vendors`, {
+        const vendorsResponse = await fetch(`${BACKEND_URL}/vendors`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -289,8 +289,8 @@ const CreateBlog = () => {
       console.log('vendor_id:', blogData.vendor_id, 'type:', typeof blogData.vendor_id);
       console.log('shortDescription:', blogData.shortDescription?.substring(0, 30), 'length:', blogData.shortDescription?.length);
 
-      console.log('Sending request to API:', `${API_URL}/blogs`);
-      const response = await fetch(`${API_URL}/blogs`, {
+      console.log('Sending request to API:', `${BACKEND_URL}/blogs`);
+      const response = await fetch(`${BACKEND_URL}/blogs`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

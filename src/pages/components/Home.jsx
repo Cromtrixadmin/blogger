@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Home.css';
+import { BACKEND_URL } from '../../config';
 
-const API_URL = 'http://52.201.37.240:5001/api';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ const Home = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await fetch(`${API_URL}/blogs`);
+        const response = await fetch(`${BACKEND_URL}/blogs`);
         if (!response.ok) throw new Error('Failed to fetch blogs');
         const data = await response.json();
         

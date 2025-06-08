@@ -3,8 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import '../css/CreateBlog.css';
+import { BACKEND_URL } from '../../config';
 
-const API_URL = 'http://52.201.37.240:5001/api';
 
 const EditBlog = () => {
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ const EditBlog = () => {
         }
         
         // Fetch blog data
-        const blogResponse = await fetch(`${API_URL}/blogs/${id}`, {
+        const blogResponse = await fetch(`${BACKEND_URL}/blogs/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -61,13 +61,13 @@ const EditBlog = () => {
         setSelectedCategories(blogData.categories ? blogData.categories.split(',').filter(cat => cat.trim() !== '') : []);
 
         // Fetch categories
-        const categoriesResponse = await fetch(`${API_URL}/categories`);
+        const categoriesResponse = await fetch(`${BACKEND_URL}/categories`);
         if (!categoriesResponse.ok) throw new Error('Failed to fetch categories');
         const categoriesData = await categoriesResponse.json();
         setCategories(categoriesData);
 
         // Fetch vendors
-        const vendorsResponse = await fetch(`${API_URL}/vendors`, {
+        const vendorsResponse = await fetch(`${BACKEND_URL}/vendors`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -220,7 +220,7 @@ const EditBlog = () => {
       
       console.log('Sending update data:', blogData);
 
-      const response = await fetch(`${API_URL}/blogs/${id}`, {
+      const response = await fetch(`${BACKEND_URL}/blogs/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

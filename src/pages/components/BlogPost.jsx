@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import '../css/BlogPost.css';
+import { BACKEND_URL } from '../../config';
 
-const API_URL = 'http://52.201.37.240:5001/api';
 
 const PopupAd = ({ isVisible, onClose }) => {
   if (!isVisible) return null;
@@ -47,7 +47,7 @@ const BlogPost = () => {
   const fetchAdVisibilitySettings = async () => {
     try {
       const token = localStorage.getItem('token'); // Assuming token might be needed, or remove if not
-      const response = await fetch(`${API_URL}/ad-visibility`, {
+      const response = await fetch(`${BACKEND_URL}/ad-visibility`, {
         headers: {
           // Add Authorization header if your API requires it for this endpoint
           // 'Authorization': `Bearer ${token}` 
@@ -112,7 +112,7 @@ const BlogPost = () => {
 
   const fetchBlog = async () => {
     try {
-      const response = await fetch(`${API_URL}/blogs/${id}`);
+      const response = await fetch(`${BACKEND_URL}/blogs/${id}`);
       if (!response.ok) {
         throw new Error('Blog not found');
       }

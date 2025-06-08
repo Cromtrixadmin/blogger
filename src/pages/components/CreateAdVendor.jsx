@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/CreateAdVendor.css';
+import { BACKEND_URL } from '../../config';
 
-const API_URL = 'http://52.201.37.240:5001/api';
+
 
 const CreateAdVendor = () => {
   const navigate = useNavigate();
@@ -70,9 +71,9 @@ const CreateAdVendor = () => {
       };
       
       console.log('Submitting vendor data:', requestData);
-      console.log('API endpoint:', `${API_URL}/vendors`);
+      console.log('API endpoint:', `${BACKEND_URL}/vendors`);
 
-      const response = await fetch(`${API_URL}/vendors`, {
+      const response = await fetch(`${BACKEND_URL}/vendors`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

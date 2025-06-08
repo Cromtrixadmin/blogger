@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../css/CreateAdVendor.css';
+import { BACKEND_URL } from '../../config';
 
-const API_URL = 'http://52.201.37.240:5001/api';
 
 const EditVendor = () => {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ const EditVendor = () => {
           return;
         }
 
-        const response = await fetch(`${API_URL}/vendors/${id}`, {
+        const response = await fetch(`${BACKEND_URL}/vendors/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -100,7 +100,7 @@ const EditVendor = () => {
         status
       };
 
-      const response = await fetch(`${API_URL}/vendors/${id}`, {
+      const response = await fetch(`${BACKEND_URL}/vendors/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

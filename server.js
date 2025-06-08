@@ -909,4 +909,4 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Not found', details: 'The requested resource was not found' });
 });
 
-const API_URL = 'http://52.201.37.240:5001/api'; 
+// const API_URL = 'http://52.201.37.240:5001/api'; // for local testing

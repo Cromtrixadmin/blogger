@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/ManageAds.css';
+import { BACKEND_URL } from '../../config';
 
-const API_URL = 'http://52.201.37.240:5001/api';
 
 // Add AdActivity component
 function AdActivity({ isOpen, onClose, adLocations, onVisibilityChange }) {
@@ -83,7 +83,7 @@ function VendorExtraInfo({ onSave, availableAdTypes, vendorId }) {
         if (!token) return;
         
         setLoading(true);
-        const response = await fetch(`${API_URL}/ads/vendor/${vendorId}`, {
+        const response = await fetch(`${BACKEND_URL}/ads/vendor/${vendorId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -333,7 +333,7 @@ const ManageAds = () => {
     try {
       const token = localStorage.getItem('token');
       // Assuming an endpoint to fetch ad visibility settings
-      const response = await fetch(`${API_URL}/ad-visibility`, {
+      const response = await fetch(`${BACKEND_URL}/ad-visibility`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -410,7 +410,7 @@ const ManageAds = () => {
     try {
       const token = localStorage.getItem('token');
       // Assuming an endpoint to update ad visibility settings
-      const response = await fetch(`${API_URL}/ad-visibility`, {
+      const response = await fetch(`${BACKEND_URL}/ad-visibility`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -449,7 +449,7 @@ const ManageAds = () => {
         return;
       }
 
-      const vendorsResponse = await fetch(`${API_URL}/vendors`, {
+      const vendorsResponse = await fetch(`${BACKEND_URL}/vendors`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -497,7 +497,7 @@ const ManageAds = () => {
         return;
       }
 
-      const response = await fetch(`${API_URL}/vendors/${id}`, {
+      const response = await fetch(`${BACKEND_URL}/vendors/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -563,7 +563,7 @@ const ManageAds = () => {
         return;
       }
 
-      const response = await fetch(`${API_URL}/ads/${id}`, {
+      const response = await fetch(`${BACKEND_URL}/ads/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -630,11 +630,11 @@ const ManageAds = () => {
       };
       
       console.log('Saving ads with data:', payload);
-      console.log('API URL:', `${API_URL}/ads`);
+      console.log('API URL:', `${BACKEND_URL}/ads`);
       
       // First try to ping the server to ensure it's running
       try {
-        const pingResponse = await fetch(`${API_URL}/ping`);
+        const pingResponse = await fetch(`${BACKEND_URL}/ping`);
         if (pingResponse.ok) {
           console.log('Server ping successful');
         } else {
@@ -645,7 +645,7 @@ const ManageAds = () => {
       }
       
       // Now try to save the ads
-      const response = await fetch(`${API_URL}/ads`, {
+      const response = await fetch(`${BACKEND_URL}/ads`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

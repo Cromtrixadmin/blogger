@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/AdminDashboard.css';
+import { BACKEND_URL } from '../../config';
 
-const API_URL = 'http://52.201.37.240:5001/api';
+
 const REQUEST_TIMEOUT = 10000; // 10 seconds timeout
 
 const AdminDashboard = () => {
@@ -49,7 +50,7 @@ const AdminDashboard = () => {
     const fetchData = async () => {
       try {
         // Fetch blogs
-        const blogsResponse = await fetchWithTimeout(`${API_URL}/blogs`, {
+        const blogsResponse = await fetchWithTimeout(`${BACKEND_URL}/blogs`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -72,7 +73,7 @@ const AdminDashboard = () => {
         setBlogs(processedBlogs);
 
         // Fetch categories
-        const categoriesResponse = await fetchWithTimeout(`${API_URL}/categories`, {
+        const categoriesResponse = await fetchWithTimeout(`${BACKEND_URL}/categories`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -120,7 +121,7 @@ const AdminDashboard = () => {
         return;
       }
 
-      const response = await fetchWithTimeout(`${API_URL}/blogs/${id}`, {
+      const response = await fetchWithTimeout(`${BACKEND_URL}/blogs/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -174,7 +175,7 @@ const AdminDashboard = () => {
         return;
       }
 
-      const response = await fetchWithTimeout(`${API_URL}/categories`, {
+      const response = await fetchWithTimeout(`${BACKEND_URL}/categories`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -233,7 +234,7 @@ const AdminDashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetchWithTimeout(`${API_URL}/categories/${categories[index].id}`, {
+      const response = await fetchWithTimeout(`${BACKEND_URL}/categories/${categories[index].id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -277,7 +278,7 @@ const AdminDashboard = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetchWithTimeout(`${API_URL}/categories/${categoryId}`, {
+      const response = await fetchWithTimeout(`${BACKEND_URL}/categories/${categoryId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
