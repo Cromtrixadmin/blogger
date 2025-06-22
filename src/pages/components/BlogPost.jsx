@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import '../css/BlogPost.css';
 import { BACKEND_URL } from '../../config';
@@ -27,16 +27,67 @@ const PopupAd = ({ isVisible, onClose }) => {
   );
 };
 
+const AdComponent = ({ adCode }) => {
+  const adContainerRef = useRef(null);
+
+  useEffect(() => {
+    if (adContainerRef.current && adCode) {
+      // Clear previous ad content
+      adContainerRef.current.innerHTML = '';
+
+      // Create a temporary container to parse the ad code
+      const tempContainer = document.createElement('div');
+      tempContainer.innerHTML = adCode;
+
+      // Append all child nodes from temp container to the ad container
+      while (tempContainer.firstChild) {
+        adContainerRef.current.appendChild(tempContainer.firstChild);
+      }
+
+      // Find and re-execute scripts
+      const scripts = Array.from(adContainerRef.current.getElementsByTagName('script'));
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement('script');
+        
+        // Copy attributes
+        for (let i = 0; i < oldScript.attributes.length; i++) {
+          newScript.setAttribute(oldScript.attributes[i].name, oldScript.attributes[i].value);
+        }
+        
+        // Copy content or src
+        if (oldScript.src) {
+          newScript.src = oldScript.src;
+        } else {
+          try {
+            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+          } catch (e) {
+            console.error('Error creating script text node:', e);
+          }
+        }
+        
+        // Replace the old script tag with the new one to trigger execution
+        if (oldScript.parentNode) {
+          oldScript.parentNode.replaceChild(newScript, oldScript);
+        }
+      });
+    }
+  }, [adCode]);
+
+  return <div ref={adContainerRef} className="in-content-ad-wrapper" />;
+};
+
 const BlogPost = () => {
   const { id } = useParams();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showPopupAd, setShowPopupAd] = useState(false);
+  const [inContentAd, setInContentAd] = useState(null);
   const [adVisibility, setAdVisibility] = useState({
     header: true,
     left: true,
     right: true,
+    'in-content': true,
     footerLeft: true,
     footerRight: true,
     footer: true,
@@ -153,6 +204,26 @@ const BlogPost = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchInContentAd = async () => {
+      try {
+        const response = await fetch(`${BACKEND_URL}/ads/location/In-Content Ad`);
+        if (response.ok) {
+          const adData = await response.json();
+          if (adData && adData.ad_code) {
+            setInContentAd(adData.ad_code);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching in-content ad:', error);
+      }
+    };
+
+    if (adVisibility['in-content']) {
+      fetchInContentAd();
+    }
+  }, [adVisibility]);
+
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
     return {
@@ -191,6 +262,45 @@ const BlogPost = () => {
 
   const { date, time } = formatDateTime(blog.created_at);
 
+  const renderContentWithAd = () => {
+    if (!blog?.content) return null;
+
+    if (!inContentAd || !adVisibility['in-content']) {
+      return <div className="blog-post-content" dangerouslySetInnerHTML={{ __html: blog.content }} />;
+    }
+    
+    // Split content by paragraphs. It's a simple but effective way for typical blog posts.
+    const contentParts = blog.content.split('</p>');
+    const adInjectionIndex = 2; // Inject after the 2nd paragraph
+
+    if (contentParts.length <= adInjectionIndex) {
+      // If content is too short, append ad at the end.
+      return (
+        <div className="blog-post-content">
+          <div dangerouslySetInnerHTML={{ __html: blog.content }} />
+          <AdComponent adCode={inContentAd} />
+        </div>
+      );
+    }
+
+    const contentWithAd = contentParts.reduce((acc, part, index) => {
+      // Re-add the closing paragraph tag that was removed by split()
+      const partWithTag = (index < contentParts.length - 1 || blog.content.endsWith('</p>')) 
+        ? `${part}</p>` 
+        : part;
+
+      acc.push(<div key={`content-${index}`} dangerouslySetInnerHTML={{ __html: partWithTag }} />);
+      
+      if (index === adInjectionIndex - 1) {
+        acc.push(<AdComponent key="in-content-ad" adCode={inContentAd} />);
+      }
+      
+      return acc;
+    }, []);
+
+    return <div className="blog-post-content">{contentWithAd}</div>;
+  };
+
   return (
     <div className="blog-post-container">
       <PopupAd 
@@ -226,10 +336,7 @@ const BlogPost = () => {
             </div>
           </header>
           
-          <div 
-            className="blog-post-content"
-            dangerouslySetInnerHTML={{ __html: blog.content }}
-          />
+          {renderContentWithAd()}
         </article>
 
         {adVisibility.right && (
