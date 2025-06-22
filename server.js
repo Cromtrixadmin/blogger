@@ -87,6 +87,24 @@ const testDatabaseConnection = async () => {
         throw new Error(`Missing required tables: ${missingTables.join(', ')}`);
       }
     }
+    
+    // Check for ad_visibility_settings table
+    if (!tableNames.includes('ad_visibility_settings')) {
+      console.log('Creating ad_visibility_settings table...');
+      try {
+        await connection.execute(`
+          CREATE TABLE ad_visibility_settings (
+            id VARCHAR(50) PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            is_visible BOOLEAN NOT NULL DEFAULT TRUE
+          )
+        `);
+        console.log('ad_visibility_settings table created successfully');
+      } catch (error) {
+        console.error('Error creating ad_visibility_settings table:', error);
+        throw error;
+      }
+    }
   } catch (error) {
     console.error('Database connection test failed:', error);
     throw error;
@@ -758,6 +776,32 @@ app.get('/api/ads/vendor/:vendorId', authenticateToken, async (req, res) => {
   }
 });
 
+// Get a single ad by location ID
+app.get('/api/ads/location/:locationId', async (req, res) => {
+  try {
+    const { locationId } = req.params;
+    console.log(`Fetching ad for location: ${locationId}`);
+
+    // This query will randomly select one ad for the given location
+    // among all vendors that have an ad for this location.
+    const [ads] = await pool.execute(
+      `SELECT ad_code FROM ads WHERE location_id = ? ORDER BY RAND() LIMIT 1`,
+      [locationId]
+    );
+
+    if (ads.length > 0) {
+      console.log(`Ad found for location: ${locationId}`);
+      res.json(ads[0]);
+    } else {
+      console.log(`No ad found for location: ${locationId}`);
+      res.status(404).json({ message: 'No ad found for this location' });
+    }
+  } catch (error) {
+    console.error('Error fetching ad by location:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Save ads for a vendor
 app.post('/api/ads', authenticateToken, async (req, res) => {
   console.log('POST /api/ads - Received request');
@@ -867,6 +911,50 @@ app.delete('/api/ads/:id', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Error deleting ad:', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Ad Visibility API
+// Get ad visibility settings
+app.get('/api/ad-visibility', async (req, res) => {
+  try {
+    const [settings] = await pool.execute('SELECT * FROM ad_visibility_settings');
+    // If no settings, maybe return a default set?
+    res.json(settings);
+  } catch (error) {
+    console.error('Error fetching ad visibility:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Update ad visibility settings
+app.post('/api/ad-visibility', authenticateToken, async (req, res) => {
+  const connection = await pool.getConnection();
+  try {
+    const settings = req.body; // Expects an array of { id, name, isVisible }
+    
+    await connection.beginTransaction();
+    
+    for (const setting of settings) {
+      await connection.execute(
+        `
+        INSERT INTO ad_visibility_settings (id, name, is_visible) 
+        VALUES (?, ?, ?)
+        ON DUPLICATE KEY UPDATE name = ?, is_visible = ?
+        `,
+        [setting.id, setting.name, setting.isVisible, setting.name, setting.isVisible]
+      );
+    }
+    
+    await connection.commit();
+    res.json({ message: 'Settings updated successfully' });
+
+  } catch (error) {
+    await connection.rollback();
+    console.error('Error updating ad visibility:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    connection.release();
   }
 });
 

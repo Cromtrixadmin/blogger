@@ -212,7 +212,7 @@ function VendorExtraInfo({ onSave, availableAdTypes, vendorId }) {
       }
       
       // Call the onSave function passed from parent with formatted data
-      await onSave(adEntries);
+      await onSave(adEntries, vendorId);
       setLocalError('');
     } catch (error) {
       console.error('Error saving ad data:', error);
@@ -343,7 +343,7 @@ const ManageAds = () => {
         throw new Error('Failed to fetch ad visibility settings');
       }
       const settings = await response.json();
-      if (settings && Array.isArray(settings)) {
+      if (settings && Array.isArray(settings) && settings.length > 0) {
         // Merge with default to ensure all locations are present and names are correct
         const defaultLocations = [
           { id: 'header', name: 'Header Banner', isVisible: true },
@@ -359,7 +359,7 @@ const ManageAds = () => {
             const loadedLoc = settings.find(loc => loc.id === defaultLoc.id);
             return {
               ...defaultLoc,
-              isVisible: loadedLoc !== undefined ? loadedLoc.isVisible : defaultLoc.isVisible,
+              isVisible: loadedLoc !== undefined ? loadedLoc.is_visible : defaultLoc.isVisible,
             };
           });
         setAdLocations(mergedSettings);
@@ -411,6 +411,8 @@ const ManageAds = () => {
       return location;
     });
 
+    const locationToUpdate = newLocations.find(l => l.id === locationId);
+
     try {
       const token = localStorage.getItem('token');
       // Assuming an endpoint to update ad visibility settings
@@ -420,7 +422,7 @@ const ManageAds = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(newLocations)
+        body: JSON.stringify([locationToUpdate])
       });
 
       if (!response.ok) {
@@ -606,19 +608,18 @@ const ManageAds = () => {
     return vendors;
   };
 
-  // Save handler for extra info (replace with API call as needed)
-  const handleSaveExtraInfo = async (adEntries) => {
+  const handleSaveExtraInfo = async (adEntries, vendorId) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
     try {
       setLoading(true);
       setError('');
-      const token = localStorage.getItem('token');
       
-      if (!token) {
-        navigate('/login');
-        return;
-      }
-      
-      if (!selectedVendorId) {
+      if (!vendorId) {
         setError('No vendor selected');
         return;
       }
@@ -626,7 +627,7 @@ const ManageAds = () => {
       // Format the request payload exactly as expected by the server
       // Ensure we're using the exact location names provided in the entries
       const payload = {
-        vendorId: Number(selectedVendorId), // Ensure it's a number
+        vendorId: Number(vendorId), // Ensure it's a number
         adEntries: adEntries ? adEntries.map(entry => ({
           locationId: entry.locationId, // This should already be the full name from VendorExtraInfo
           adCode: entry.adCode

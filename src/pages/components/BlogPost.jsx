@@ -110,7 +110,7 @@ const BlogPost = () => {
       const settings = await response.json();
       if (settings && Array.isArray(settings)) {
         const visibilityMap = settings.reduce((acc, setting) => {
-          acc[setting.id] = setting.isVisible;
+          acc[setting.id] = setting.is_visible;
           return acc;
         }, {});
         console.log('Loaded ad visibility settings from API:', visibilityMap);
