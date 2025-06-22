@@ -140,17 +140,12 @@ const BlogPost = () => {
   useEffect(() => {
     // Show popup ad after 3 seconds if it's enabled
     if (adVisibility.popup) {
-      console.log('Setting up popup timer... Popup visibility:', adVisibility.popup); // Debug log
       const timer = setTimeout(() => {
-        console.log('Showing popup ad...'); // Debug log
         setShowPopupAd(true);
       }, 3000);
       return () => {
-        console.log('Cleaning up popup timer...'); // Debug log
         clearTimeout(timer);
       };
-    } else {
-      console.log('Popup ad is disabled. Visibility setting:', adVisibility.popup); // Debug log
     }
   }, [adVisibility.popup]);
 
@@ -185,53 +180,20 @@ const BlogPost = () => {
   }, [id]);
 
   useEffect(() => {
-    // Load Google AdSense script
-    const script = document.createElement('script');
-    script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
-    script.async = true;
-    script.crossOrigin = 'anonymous';
-    document.head.appendChild(script);
-
-    // Initialize ads after script loads
-    script.onload = () => {
-      try {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (error) {
-        console.error('AdSense error:', error);
-      }
-    };
-
-    return () => {
-      // Cleanup script on unmount
-      document.head.removeChild(script);
-    };
-  }, []);
-
-  useEffect(() => {
     const fetchInContentAd = async () => {
-      console.log("Attempting to fetch in-content ad...");
       try {
         const response = await fetch(`${BACKEND_URL}/ads/location/In-Content Ad`);
-        console.log("Fetch ad response status:", response.status);
         if (response.ok) {
           const adData = await response.json();
-          console.log("Received ad data:", adData);
           if (adData && adData.ad_code) {
-            console.log("Setting in-content ad code.");
             setInContentAd(adData.ad_code);
-          } else {
-            console.log("No ad_code found in response.");
           }
-        } else {
-            console.log("Failed to fetch ad, response not OK.");
         }
       } catch (error) {
         console.error('Error fetching in-content ad:', error);
       }
     };
 
-    console.log("Checking if in-content ad should be fetched. Visibility:", adVisibility['in-content']);
     if (adVisibility['in-content']) {
       fetchInContentAd();
     }
@@ -276,15 +238,12 @@ const BlogPost = () => {
   const { date, time } = formatDateTime(blog.created_at);
 
   const renderContentWithAd = () => {
-    console.log("renderContentWithAd called. Ad code:", inContentAd, "Visibility:", adVisibility['in-content']);
     if (!blog?.content) return null;
 
     if (!inContentAd || !adVisibility['in-content']) {
-      console.log("Rendering content WITHOUT ad.");
       return <div className="blog-post-content" dangerouslySetInnerHTML={{ __html: blog.content }} />;
     }
     
-    console.log("Rendering content WITH ad.");
     // Split content by paragraphs. It's a simple but effective way for typical blog posts.
     const contentParts = blog.content.split('</p>');
     const adInjectionIndex = 2; // Inject after the 2nd paragraph

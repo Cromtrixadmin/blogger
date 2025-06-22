@@ -56,7 +56,7 @@ const testDatabaseConnection = async () => {
     console.log('Available tables:', tableNames);
 
     // Check if required tables exist
-    const requiredTables = ['blogs', 'categories', 'blog_categories', 'users', 'vendors', 'ads'];
+    const requiredTables = ['blogs', 'categories', 'blog_categories', 'users', 'vendors', 'ads', 'ad_visibility_settings'];
     const missingTables = requiredTables.filter(table => !tableNames.includes(table));
     
     if (missingTables.length > 0) {
@@ -86,23 +86,27 @@ const testDatabaseConnection = async () => {
       } else {
         throw new Error(`Missing required tables: ${missingTables.join(', ')}`);
       }
-    }
-    
-    // Check for ad_visibility_settings table
-    if (!tableNames.includes('ad_visibility_settings')) {
-      console.log('Creating ad_visibility_settings table...');
-      try {
-        await connection.execute(`
-          CREATE TABLE ad_visibility_settings (
-            id VARCHAR(50) PRIMARY KEY,
-            name VARCHAR(100) NOT NULL,
-            is_visible BOOLEAN NOT NULL DEFAULT TRUE
-          )
-        `);
-        console.log('ad_visibility_settings table created successfully');
-      } catch (error) {
-        console.error('Error creating ad_visibility_settings table:', error);
-        throw error;
+      
+      // Create ad_visibility_settings table if it doesn't exist
+      if (missingTables.includes('ad_visibility_settings')) {
+        console.log('Creating ad_visibility_settings table...');
+        try {
+          await connection.execute(`
+            CREATE TABLE ad_visibility_settings (
+              id VARCHAR(50) PRIMARY KEY,
+              name VARCHAR(100) NOT NULL,
+              is_visible BOOLEAN NOT NULL DEFAULT TRUE
+            )
+          `);
+          console.log('ad_visibility_settings table created successfully');
+        } catch (error) {
+          console.error('Error creating ad_visibility_settings table:', error);
+          throw error;
+        }
+      }
+      
+      if (missingTables.filter(t => t !== 'ads' && t !== 'ad_visibility_settings').length > 0) {
+        throw new Error(`Missing required tables: ${missingTables.join(', ')}`);
       }
     }
   } catch (error) {
@@ -126,13 +130,13 @@ testDatabaseConnection()
   });
 
 // Simple ping endpoint for testing
-app.get('/api/ping', (req, res) => {
+app.get('/ping', (req, res) => {
   console.log('Ping endpoint called');
   res.json({ message: 'Server is running' });
 });
 
 // API Routes
-app.post('/api/login', async (req, res) => {
+app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     console.log('Login attempt for user:', username);
@@ -163,7 +167,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-app.get('/api/blogs', async (req, res) => {
+app.get('/blogs', async (req, res) => {
   try {
     const [blogs] = await pool.execute(
       `
@@ -189,7 +193,7 @@ app.get('/api/blogs', async (req, res) => {
 });
 
 // Get single blog post by ID
-app.get('/api/blogs/:id', async (req, res) => {
+app.get('/blogs/:id', async (req, res) => {
   try {
     const blogId = req.params.id;
     const [rows] = await pool.execute(
@@ -214,7 +218,7 @@ app.get('/api/blogs/:id', async (req, res) => {
   }
 });
 
-app.post('/api/blogs', async (req, res) => {
+app.post('/blogs', async (req, res) => {
   console.log('Starting blog creation process');
   console.log('Request body:', JSON.stringify(req.body, null, 2));
   
@@ -321,7 +325,7 @@ app.post('/api/blogs', async (req, res) => {
 });
 
 // Delete a blog
-app.delete('/api/blogs/:id', authenticateToken, async (req, res) => {
+app.delete('/blogs/:id', authenticateToken, async (req, res) => {
   console.log('Starting blog deletion process for ID:', req.params.id);
   const connection = await pool.getConnection();
   try {
@@ -369,7 +373,7 @@ app.delete('/api/blogs/:id', authenticateToken, async (req, res) => {
 });
 
 // Update a blog
-app.put('/api/blogs/:id', authenticateToken, async (req, res) => {
+app.put('/blogs/:id', authenticateToken, async (req, res) => {
   console.log('Starting blog update process for ID:', req.params.id);
   const connection = await pool.getConnection();
   try {
@@ -448,7 +452,7 @@ app.put('/api/blogs/:id', authenticateToken, async (req, res) => {
 });
 
 // Categories API Routes
-app.get('/api/categories', async (req, res) => {
+app.get('/categories', async (req, res) => {
   try {
     const [categories] = await pool.execute('SELECT * FROM categories ORDER BY name');
     res.json(categories);
@@ -458,7 +462,7 @@ app.get('/api/categories', async (req, res) => {
   }
 });
 
-app.post('/api/categories', async (req, res) => {
+app.post('/categories', async (req, res) => {
   try {
     const { name } = req.body;
     
@@ -490,7 +494,7 @@ app.post('/api/categories', async (req, res) => {
   }
 });
 
-app.put('/api/categories/:id', async (req, res) => {
+app.put('/categories/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
@@ -533,7 +537,7 @@ app.put('/api/categories/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/categories/:id', async (req, res) => {
+app.delete('/categories/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -561,7 +565,7 @@ app.delete('/api/categories/:id', async (req, res) => {
 });
 
 // Vendors API Routes
-app.get('/api/vendors', authenticateToken, async (req, res) => {
+app.get('/vendors', authenticateToken, async (req, res) => {
   try {
     const [vendors] = await pool.execute('SELECT * FROM vendors ORDER BY name');
     res.json(vendors);
@@ -571,7 +575,7 @@ app.get('/api/vendors', authenticateToken, async (req, res) => {
   }
 });
 
-app.post('/api/vendors', authenticateToken, async (req, res) => {
+app.post('/vendors', authenticateToken, async (req, res) => {
   console.log('Starting vendor creation process');
   console.log('Request headers:', req.headers);
   console.log('Request body:', req.body);
@@ -664,7 +668,7 @@ app.post('/api/vendors', authenticateToken, async (req, res) => {
 });
 
 // Get single vendor
-app.get('/api/vendors/:id', authenticateToken, async (req, res) => {
+app.get('/vendors/:id', authenticateToken, async (req, res) => {
   try {
     const [vendors] = await pool.execute('SELECT * FROM vendors WHERE id = ?', [req.params.id]);
     if (vendors.length === 0) {
@@ -678,7 +682,7 @@ app.get('/api/vendors/:id', authenticateToken, async (req, res) => {
 });
 
 // Update vendor
-app.put('/api/vendors/:id', authenticateToken, async (req, res) => {
+app.put('/vendors/:id', authenticateToken, async (req, res) => {
   const connection = await pool.getConnection();
   try {
     const { name, email, phone, status } = req.body;
@@ -738,7 +742,7 @@ app.put('/api/vendors/:id', authenticateToken, async (req, res) => {
 });
 
 // Delete vendor
-app.delete('/api/vendors/:id', authenticateToken, async (req, res) => {
+app.delete('/vendors/:id', authenticateToken, async (req, res) => {
   try {
     const [result] = await pool.execute('DELETE FROM vendors WHERE id = ?', [req.params.id]);
     if (result.affectedRows === 0) {
@@ -752,7 +756,7 @@ app.delete('/api/vendors/:id', authenticateToken, async (req, res) => {
 });
 
 // Ads API Routes
-app.get('/api/ads', authenticateToken, async (req, res) => {
+app.get('/ads', authenticateToken, async (req, res) => {
   try {
     const [ads] = await pool.execute('SELECT * FROM ads ORDER BY created_at DESC');
     res.json(ads);
@@ -763,7 +767,7 @@ app.get('/api/ads', authenticateToken, async (req, res) => {
 });
 
 // Get ads for a specific vendor
-app.get('/api/ads/vendor/:vendorId', authenticateToken, async (req, res) => {
+app.get('/ads/vendor/:vendorId', authenticateToken, async (req, res) => {
   try {
     const [ads] = await pool.execute(
       'SELECT ads.*, vendors.name as vendor_name FROM ads JOIN vendors ON ads.vendor_id = vendors.id WHERE vendor_id = ? ORDER BY created_at DESC', 
@@ -777,7 +781,7 @@ app.get('/api/ads/vendor/:vendorId', authenticateToken, async (req, res) => {
 });
 
 // Get a single ad by location ID
-app.get('/api/ads/location/:locationId', async (req, res) => {
+app.get('/ads/location/:locationId', async (req, res) => {
   try {
     const { locationId } = req.params;
     console.log(`Fetching ad for location: ${locationId}`);
@@ -803,8 +807,8 @@ app.get('/api/ads/location/:locationId', async (req, res) => {
 });
 
 // Save ads for a vendor
-app.post('/api/ads', authenticateToken, async (req, res) => {
-  console.log('POST /api/ads - Received request');
+app.post('/ads', authenticateToken, async (req, res) => {
+  console.log('POST /ads - Received request');
   console.log('Request body:', req.body);
   
   const connection = await pool.getConnection();
@@ -901,7 +905,7 @@ app.post('/api/ads', authenticateToken, async (req, res) => {
 });
 
 // Delete a specific ad
-app.delete('/api/ads/:id', authenticateToken, async (req, res) => {
+app.delete('/ads/:id', authenticateToken, async (req, res) => {
   try {
     const [result] = await pool.execute('DELETE FROM ads WHERE id = ?', [req.params.id]);
     if (result.affectedRows === 0) {
@@ -916,7 +920,7 @@ app.delete('/api/ads/:id', authenticateToken, async (req, res) => {
 
 // Ad Visibility API
 // Get ad visibility settings
-app.get('/api/ad-visibility', async (req, res) => {
+app.get('/ad-visibility', async (req, res) => {
   try {
     const [settings] = await pool.execute('SELECT * FROM ad_visibility_settings');
     // If no settings, maybe return a default set?
@@ -928,7 +932,7 @@ app.get('/api/ad-visibility', async (req, res) => {
 });
 
 // Update ad visibility settings
-app.post('/api/ad-visibility', authenticateToken, async (req, res) => {
+app.post('/ad-visibility', authenticateToken, async (req, res) => {
   const connection = await pool.getConnection();
   try {
     const settings = req.body; // Expects an array of { id, name, isVisible }
